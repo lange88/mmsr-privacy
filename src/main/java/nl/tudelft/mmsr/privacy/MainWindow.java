@@ -7,10 +7,14 @@ package nl.tudelft.mmsr.privacy;
 
 import java.awt.Image;
 import java.io.File;
+import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  *
@@ -23,8 +27,8 @@ public class MainWindow extends javax.swing.JFrame {
      */
     private File currentFile = null;
     private File outputFile = null;
-    private File[] availableJSONs = null;
-    private File currentJSON = null;
+    private ArrayList<File> availableJSONs = new ArrayList<>();
+    //private File currentJSON = null;   
     
     /**
      * Top Level Functions
@@ -32,7 +36,48 @@ public class MainWindow extends javax.swing.JFrame {
     private void labelToImage(JLabel setLabel) {
         Image setImage = new ImageIcon(currentFile.getAbsolutePath()).getImage().getScaledInstance(296, 246, Image.SCALE_DEFAULT);        
         setLabel.setIcon(new ImageIcon(setImage));
+    }    
+    
+    /**
+     * GUI Operations & Filters
+     */
+    private final FileNameExtensionFilter imageFilter = new FileNameExtensionFilter("Image Files", "jpg", "png", "gif", "jpeg");
+    private final FileNameExtensionFilter jsonFilter = new FileNameExtensionFilter("JSON Files", "json");
+    private JFileChooser InitializeFC(FileNameExtensionFilter activeFilter) {
+        JFileChooser fileChooser = new JFileChooser(); //Create new JFileChooser window
+        fileChooser.setFileFilter(activeFilter); //Set JSON Filter
+        fileChooser.setCurrentDirectory(new File(System.getProperty("user.home"))); //Set default path to user's directory
+        return fileChooser;
     }
+    private File ReturnFileProcedure(int result, JFileChooser fileChooser) {
+        if (result == JFileChooser.APPROVE_OPTION) {
+            return(fileChooser.getSelectedFile());            
+        }
+        else {
+            JOptionPane.showMessageDialog(null, "Open command cancelled by user.");
+            return null;
+        }
+    } 
+    private File getFileWithFC(FileNameExtensionFilter activeFilter, JPanel parent) {
+        JFileChooser fileChooser = InitializeFC(activeFilter);
+        int result = fileChooser.showOpenDialog(parent); //Open dialog and get (lack of) selected file
+        return ReturnFileProcedure(result, fileChooser);       
+    }
+    private File saveFileWithFC(FileNameExtensionFilter activeFilter, JPanel parent) {
+        JFileChooser fileChooser = InitializeFC(activeFilter);
+        int result = fileChooser.showSaveDialog(parent); //Open dialog and select destination file
+        File resultFile = ReturnFileProcedure(result, fileChooser);
+        if (!resultFile.toString().endsWith(FilenameUtils.getExtension(currentFile.getName()))) {
+            resultFile = new File (resultFile.toString() + "." + FilenameUtils.getExtension(currentFile.getName()));
+        }            
+        return resultFile;
+    }
+    /**
+     * Safeguards & Counters
+     */
+    private boolean isSetList = false;
+    private boolean readyToSave = false;
+    int keyCounter = 1;    
     
     /**
      * Creates new form MainWindow
@@ -57,12 +102,11 @@ public class MainWindow extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
         jPanel4 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jTextField1 = new javax.swing.JTextField();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -140,28 +184,11 @@ public class MainWindow extends javax.swing.JFrame {
         jLabel4.setMinimumSize(new java.awt.Dimension(300, 40));
         jLabel4.setPreferredSize(new java.awt.Dimension(300, 40));
 
-        jList1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jList1.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Available Keys & Initialization Vectors" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        jList1.setMaximumSize(new java.awt.Dimension(300, 100));
-        jList1.setMinimumSize(new java.awt.Dimension(300, 100));
-        jScrollPane1.setViewportView(jList1);
-
-        jButton1.setText("(De)Activate Key");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
         jButton3.setText("Encrypt / Decrypt");
 
         jTextField1.setEditable(false);
         jTextField1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jTextField1.setText("Current Status: No Image");
+        jTextField1.setText("Current File: No Image");
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -170,12 +197,9 @@ public class MainWindow extends javax.swing.JFrame {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGap(30, 30, 30)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jButton1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton3))
-                    .addComponent(jTextField1))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jButton3)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 253, Short.MAX_VALUE))
+                .addContainerGap(25, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -183,11 +207,19 @@ public class MainWindow extends javax.swing.JFrame {
                 .addGap(19, 19, 19)
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton3)
-                    .addComponent(jButton1))
+                .addComponent(jButton3)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        jScrollPane2.setEnabled(false);
+        jScrollPane2.setFocusable(false);
+
+        jTextArea1.setEditable(false);
+        jTextArea1.setColumns(20);
+        jTextArea1.setFont(new java.awt.Font("Tahoma", 0, 11)); // NOI18N
+        jTextArea1.setRows(5);
+        jTextArea1.setText("No Available Keys Or Initialization Vectors");
+        jScrollPane2.setViewportView(jTextArea1);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -196,9 +228,9 @@ public class MainWindow extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(50, 50, 50)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane1)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2))
                 .addGap(100, 100, 100)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 308, Short.MAX_VALUE)
@@ -217,13 +249,10 @@ public class MainWindow extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(20, 20, 20)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2))
                 .addGap(65, 65, 65))
         );
 
@@ -242,13 +271,23 @@ public class MainWindow extends javax.swing.JFrame {
         jMenu1.add(jMenuItem1);
 
         jMenuItem2.setText("Save");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
         jMenu1.add(jMenuItem2);
 
         jMenuBar1.add(jMenu1);
 
         jMenu2.setText("Keys");
 
-        jMenuItem3.setText("Select Key Directory");
+        jMenuItem3.setText("Add To List");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
         jMenu2.add(jMenuItem3);
 
         jMenuBar1.add(jMenu2);
@@ -261,22 +300,50 @@ public class MainWindow extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        
-    }//GEN-LAST:event_jButton1ActionPerformed
-
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        JFileChooser fileChooser = new JFileChooser(); //Create new JFileChooser window
-        fileChooser.setCurrentDirectory(new File(System.getProperty("user.home"))); //Set default path to user's directory
-        int result = fileChooser.showOpenDialog(jPanel1); //Open dialog and get (lack of) selected file        
-        if (result == JFileChooser.APPROVE_OPTION) {
-            currentFile = fileChooser.getSelectedFile();
-            labelToImage(jLabel1);            
-            System.out.println("Opening: " + currentFile.getName() + "."); /* For Debugging */
-        } else {
-            JOptionPane.showMessageDialog(null, "Open command cancelled by user.");
-        }
+        File result = getFileWithFC(imageFilter, jPanel1);
+        if (result != null) {
+            currentFile = result;
+            labelToImage(jLabel1); //Display image on the left pane
+            String fileName = currentFile.getName(); //Get its name
+            jTextField1.setToolTipText("Active File: " + fileName); //Set tooltip information
+            if (fileName.length() > 30) {
+                fileName = "hoover for information"; //If longer than 30 char, do not display file's name
+            }
+            jTextField1.setText("Current File: " + fileName);
+            /* For Debugging */            
+            System.out.println("Opening: " + currentFile.getName() + ".");
+            outputFile = currentFile;
+        }   
     }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        if (readyToSave == false) {
+            JOptionPane.showMessageDialog(null, "There is nothing to be saved at the moment.");
+            return;
+        }
+        File result = saveFileWithFC(imageFilter, jPanel1);        
+        if (result != null)
+            System.out.println(result.getAbsolutePath());       
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+        File result = getFileWithFC(jsonFilter, jPanel1);
+        if (result != null) {
+            if (availableJSONs.contains(result)) {                
+                JOptionPane.showMessageDialog(null, "This file has already been loaded to the memory!");
+                return;
+            }                
+            availableJSONs.add(result);
+            if (!isSetList) {
+                jTextArea1.setText(keyCounter++ + ": " + result.getName());                
+                isSetList = true;
+            }
+            else {
+                jTextArea1.setText(jTextArea1.getText() + "\n" + keyCounter++ + ": " + result.getName());
+            }
+        }
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -314,13 +381,11 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JList<String> jList1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
@@ -332,7 +397,8 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 }
