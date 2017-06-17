@@ -1,0 +1,1 @@
+Copy it to C:\Program Files\Java\jdk1.8.0_131\bin or respective folder, depending on your java version & x64/x86 platform.
