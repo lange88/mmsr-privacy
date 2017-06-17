@@ -1,3 +1,5 @@
+package nl.tudelft.mmsr.privacy;
+
 public class EncryptionPack {
 
 	public byte [] image;
