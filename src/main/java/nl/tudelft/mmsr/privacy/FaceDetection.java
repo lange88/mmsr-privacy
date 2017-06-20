@@ -24,7 +24,7 @@ public class FaceDetection {
         public void DetectFaces(File faceImage) {  
             System.out.println(System.getProperty("java.library.path"));
             System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-            CascadeClassifier faceDetector = new CascadeClassifier(new File("src/main/resources/haarcascade_frontalface_alt.xml").getAbsolutePath());
+            CascadeClassifier faceDetector = new CascadeClassifier(new File("configuration/haarcascade_frontalface_alt.xml").getAbsolutePath());
             Mat toProcess = Highgui.imread(faceImage.getAbsolutePath()); 
             MatOfRect faceDetections = new MatOfRect();
             faceDetector.detectMultiScale(toProcess, faceDetections);
