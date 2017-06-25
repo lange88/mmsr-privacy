@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="468.0" prefWidth="652.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.mmsr.privacy.gui.FotoCryptGuiController">
+   <children>
+      <MenuBar prefHeight="28.0" prefWidth="652.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="Image">
+            <items>
+              <MenuItem fx:id="menuLoad" mnemonicParsing="false" text="Load" />
+                  <MenuItem fx:id="menuSave" mnemonicParsing="false" text="Save" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Keys">
+            <items>
+              <MenuItem fx:id="menuAddToList" mnemonicParsing="false" text="Add To List" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="About">
+            <items>
+              <MenuItem fx:id="menuAbout" mnemonicParsing="false" text="About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+       <Label layoutX="144.0" layoutY="38.0" text="Source">
+           <font>
+               <Font name="System Bold" size="18.0" />
+           </font></Label>
+       <Label layoutX="446.0" layoutY="38.0" text="Result">
+           <font>
+               <Font name="System Bold" size="18.0" />
+           </font></Label>
+       <ImageView fx:id="imageSrc" fitHeight="234.0" fitWidth="274.0" layoutX="42.0" layoutY="72.0" pickOnBounds="true" preserveRatio="true" />
+       <ImageView fx:id="imageResult" fitHeight="221.0" fitWidth="260.0" layoutX="348.0" layoutY="79.0" pickOnBounds="true" preserveRatio="true" />
+       <TextArea editable="false" layoutX="42.0" layoutY="335.0" prefHeight="119.0" prefWidth="274.0" text="No Available Keys or Initialization Vectors" wrapText="true" />
+       <TextField editable="false" layoutX="386.0" layoutY="335.0" prefHeight="26.0" prefWidth="184.0" text="Current File: No Image" />
+       <Button fx:id="buttonEncrypt" layoutX="415.0" layoutY="382.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="127.0" text="Encrypt/Decrypt" />
+   </children>
+</AnchorPane>

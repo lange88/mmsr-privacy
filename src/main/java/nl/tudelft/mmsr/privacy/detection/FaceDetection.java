@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package nl.tudelft.mmsr.privacy;
+package nl.tudelft.mmsr.privacy.detection;
 
 import java.io.File;
 import org.opencv.core.Core;
@@ -21,7 +21,7 @@ import org.opencv.objdetect.CascadeClassifier;
  */
 public class FaceDetection {
         
-        public void DetectFaces(File faceImage) {  
+        public void DetectFaces(File faceImage) {
             System.out.println(System.getProperty("java.library.path"));
             System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
             CascadeClassifier faceDetector = new CascadeClassifier(new File("configuration/haarcascade_frontalface_alt.xml").getAbsolutePath());
