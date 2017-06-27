@@ -5,10 +5,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -50,6 +47,9 @@ public class FotoCryptGuiController implements Initializable {
 
     @FXML
     private Button buttonEncrypt;
+
+    @FXML
+    private TextField textImagePath;
 
     @FXML
     private ImageView imageSrc;
@@ -107,6 +107,8 @@ public class FotoCryptGuiController implements Initializable {
                 Image image = SwingFXUtils.toFXImage(bufferedImage, null);
                 imageSrc.setImage(image);
                 faceDetection.setImageSrcPath(file);
+                textImagePath.setText("Current File: " + file.getAbsolutePath());
+
             } catch (IOException ex) {
                 System.out.println(ex.getStackTrace());
             }
