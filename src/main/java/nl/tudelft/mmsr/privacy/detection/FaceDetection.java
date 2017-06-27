@@ -45,7 +45,7 @@ public class FaceDetection {
  
         for (Rect rect : faceDetections.toArray()) {
             Core.rectangle(toProcess, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height),
-                new Scalar(0, 255, 0));
+                new Scalar(0, 255, 0), 5);
         }
  
         String filename = "ouput.png";

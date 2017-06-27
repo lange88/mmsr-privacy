@@ -44,7 +44,7 @@
        <ImageView fx:id="imageSrc" fitHeight="277.0" fitWidth="362.0" layoutY="59.0" pickOnBounds="true" preserveRatio="true" />
        <ImageView fx:id="imageResult" fitHeight="277.0" fitWidth="362.0" layoutX="379.0" layoutY="59.0" pickOnBounds="true" preserveRatio="true" />
        <TextArea editable="false" layoutX="20.0" layoutY="348.0" prefHeight="119.0" prefWidth="296.0" text="No Available Keys or Initialization Vectors" wrapText="true" />
-       <TextField fx:id="textImagePath" editable="false" layoutX="374.0" layoutY="347.0" prefHeight="26.0" prefWidth="354.0" text="Current File: No Image" />
-       <Button fx:id="buttonEncrypt" layoutX="488.0" layoutY="382.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="127.0" text="Encrypt/Decrypt" />
+       <TextField fx:id="textImagePath" editable="false" layoutX="383.0" layoutY="348.0" prefHeight="26.0" prefWidth="354.0" text="Current File: No Image" />
+       <Button fx:id="buttonEncrypt" layoutX="497.0" layoutY="382.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="127.0" text="Encrypt/Decrypt" />
    </children>
 </AnchorPane>
