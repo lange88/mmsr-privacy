@@ -11,9 +11,9 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="468.0" prefWidth="652.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.mmsr.privacy.gui.FotoCryptGuiController">
+<AnchorPane prefHeight="482.0" prefWidth="741.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.mmsr.privacy.gui.FotoCryptGuiController">
    <children>
-      <MenuBar prefHeight="28.0" prefWidth="652.0">
+      <MenuBar prefHeight="29.0" prefWidth="741.0">
         <menus>
           <Menu mnemonicParsing="false" text="Image">
             <items>
@@ -37,14 +37,14 @@
            <font>
                <Font name="System Bold" size="18.0" />
            </font></Label>
-       <Label layoutX="446.0" layoutY="38.0" text="Result">
+       <Label layoutX="528.0" layoutY="38.0" text="Result">
            <font>
                <Font name="System Bold" size="18.0" />
            </font></Label>
-       <ImageView fx:id="imageSrc" fitHeight="234.0" fitWidth="274.0" layoutX="42.0" layoutY="72.0" pickOnBounds="true" preserveRatio="true" />
-       <ImageView fx:id="imageResult" fitHeight="221.0" fitWidth="260.0" layoutX="348.0" layoutY="79.0" pickOnBounds="true" preserveRatio="true" />
-       <TextArea editable="false" layoutX="42.0" layoutY="335.0" prefHeight="119.0" prefWidth="274.0" text="No Available Keys or Initialization Vectors" wrapText="true" />
-       <TextField fx:id="textImagePath" editable="false" layoutX="341.0" layoutY="335.0" prefHeight="26.0" prefWidth="274.0" text="Current File: No Image" />
-       <Button fx:id="buttonEncrypt" layoutX="415.0" layoutY="382.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="127.0" text="Encrypt/Decrypt" />
+       <ImageView fx:id="imageSrc" fitHeight="277.0" fitWidth="362.0" layoutY="59.0" pickOnBounds="true" preserveRatio="true" />
+       <ImageView fx:id="imageResult" fitHeight="277.0" fitWidth="362.0" layoutX="379.0" layoutY="59.0" pickOnBounds="true" preserveRatio="true" />
+       <TextArea editable="false" layoutX="20.0" layoutY="348.0" prefHeight="119.0" prefWidth="296.0" text="No Available Keys or Initialization Vectors" wrapText="true" />
+       <TextField fx:id="textImagePath" editable="false" layoutX="374.0" layoutY="347.0" prefHeight="26.0" prefWidth="354.0" text="Current File: No Image" />
+       <Button fx:id="buttonEncrypt" layoutX="488.0" layoutY="382.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="127.0" text="Encrypt/Decrypt" />
    </children>
 </AnchorPane>
