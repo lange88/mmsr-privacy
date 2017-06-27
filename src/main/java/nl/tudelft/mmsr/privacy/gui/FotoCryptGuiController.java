@@ -1,5 +1,6 @@
 package nl.tudelft.mmsr.privacy.gui;
 
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -8,12 +9,18 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import nl.tudelft.mmsr.privacy.detection.FaceDetection;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,19 +63,17 @@ public class FotoCryptGuiController implements Initializable {
         buttonEncrypt.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                // handle event
+                handleButtonEncrypt();
             }
         });
         initializeMenu();
     }
 
-    public void initializeMenu() {
+    private void initializeMenu() {
         menuLoad.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                FileChooser fileChooser = new FileChooser();
-                fileChooser.setTitle("Open Image Resource File");
-                fileChooser.showOpenDialog(null);
+                handleMenuLoad();
             }
         });
         menuSave.setOnAction(new EventHandler<ActionEvent>() {
@@ -89,6 +94,43 @@ public class FotoCryptGuiController implements Initializable {
 
             }
         });
+    }
+
+    private void handleMenuLoad() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open Image Resource File");
+        File file = fileChooser.showOpenDialog(null);
+        if (file != null) {
+            // load the file
+            try {
+                BufferedImage bufferedImage = ImageIO.read(file);
+                Image image = SwingFXUtils.toFXImage(bufferedImage, null);
+                imageSrc.setImage(image);
+                faceDetection.setImageSrcPath(file);
+            } catch (IOException ex) {
+                System.out.println(ex.getStackTrace());
+            }
+        }
+    }
+
+    private void handleMenuSave() {
+        throw new NotImplementedException();
+    }
+
+    private void handleMenuAddToList() {
+        throw new NotImplementedException();
+    }
+
+    private void handleMenuAbout() {
+        throw new NotImplementedException();
+    }
+
+    private void handleButtonEncrypt() {
+        faceDetection.DetectFaces();
+    }
+
+    public void setFaceDetection(FaceDetection faceDetection) {
+        this.faceDetection = faceDetection;
     }
 
     public ImageView getImageSource() {

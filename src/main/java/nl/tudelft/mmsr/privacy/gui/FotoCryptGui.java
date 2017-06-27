@@ -4,28 +4,30 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import nl.tudelft.mmsr.privacy.detection.FaceDetection;
 
 /**
  * Created by Jeroen Vrijenhoef on 6/25/17.
  */
 public class FotoCryptGui {
-    private Image srcImage;
-    private Image resultImage;
+    private ImageView imageSrc;
+    private ImageView imageResult;
 
-    public FotoCryptGui(Stage stage) {
-        createStage(stage);
+    public FotoCryptGui(FaceDetection faceDetection, Stage stage) {
+        createStage(faceDetection, stage);
     }
 
-    public void createStage(Stage stage) {
+    public void createStage(FaceDetection faceDetection, Stage stage) {
         try {
             // load fxml file from resource and create a new stage for the dialog
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(FotoCryptGui.class.getResource("/mmsr-privacy-gui.fxml"));
             AnchorPane page = loader.load();
-            FotoCryptGuiController bejeweledController = loader.getController();
+            FotoCryptGuiController fotoCryptGuiController = loader.getController();
 
             // init the scene and set dialog properties
             Scene scene = new Scene(page);
@@ -34,6 +36,10 @@ public class FotoCryptGui {
             //stage.getIcons().add(icon);
             stage.setTitle("FotoCrypt v1.0");
             stage.setResizable(false);
+
+            imageSrc = fotoCryptGuiController.getImageSource();
+            imageResult = fotoCryptGuiController.getImageResult();
+            fotoCryptGuiController.setFaceDetection(faceDetection);
 
             stage.show();
 
