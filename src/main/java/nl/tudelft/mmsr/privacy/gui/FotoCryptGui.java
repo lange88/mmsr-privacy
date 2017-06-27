@@ -2,12 +2,9 @@ package nl.tudelft.mmsr.privacy.gui;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import nl.tudelft.mmsr.privacy.detection.FaceDetection;
 
 /**
@@ -40,6 +37,7 @@ public class FotoCryptGui {
             imageSrc = fotoCryptGuiController.getImageSource();
             imageResult = fotoCryptGuiController.getImageResult();
             faceDetection.setImageResult(imageResult);
+            faceDetection.setFotoCryptGuiController(fotoCryptGuiController);
             fotoCryptGuiController.setFaceDetection(faceDetection);
 
             stage.show();

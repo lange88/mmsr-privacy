@@ -8,11 +8,12 @@ package nl.tudelft.mmsr.privacy.detection;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
+import nl.tudelft.mmsr.privacy.gui.FotoCryptGuiController;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
@@ -32,12 +33,41 @@ public class FaceDetection {
 
     private File imageSrcFile;
     private ImageView imageResult;
-        
-    public void DetectFaces() {
+    private Mat toProcess;
+    private FotoCryptGuiController controller;
+
+    public void loadSourceImage() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open Image Resource File");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("All Images", "*.*"),
+                new FileChooser.ExtensionFilter("PNG", "*.png")
+        );
+        File file = fileChooser.showOpenDialog(null);
+        if (file != null) {
+            // load the file
+            try {
+                BufferedImage bufferedImage = ImageIO.read(file);
+                Image image = SwingFXUtils.toFXImage(bufferedImage, null);
+                controller.getImageSource().setImage(image);
+                controller.getTextImagePath().setText("Current File: " + file.getAbsolutePath());
+                imageSrcFile = file;
+
+            } catch (IOException ex) {
+                System.out.println(ex.getStackTrace());
+            }
+        }
+    }
+
+    public void saveImage() {
+
+    }
+
+    public void detectFaces() {
         System.out.println(System.getProperty("java.library.path"));
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         CascadeClassifier faceDetector = new CascadeClassifier(new File("configuration/haarcascade_frontalface_alt.xml").getAbsolutePath());
-        Mat toProcess = Highgui.imread(imageSrcFile.getAbsolutePath());
+        toProcess = Highgui.imread(imageSrcFile.getAbsolutePath());
         MatOfRect faceDetections = new MatOfRect();
         faceDetector.detectMultiScale(toProcess, faceDetections);
  
@@ -51,10 +81,10 @@ public class FaceDetection {
         String filename = "ouput.png";
         System.out.println(String.format("Writing %s", filename));
         Highgui.imwrite(filename, toProcess);
-        displayResultImage(new File(filename));
+        loadResultImage(new File(filename));
     }
 
-    private void displayResultImage(File file) {
+    private void loadResultImage(File file) {
         try {
             BufferedImage bufferedImage = ImageIO.read(file);
             Image image = SwingFXUtils.toFXImage(bufferedImage, null);
@@ -70,5 +100,9 @@ public class FaceDetection {
 
     public void setImageResult(ImageView imageResult) {
         this.imageResult = imageResult;
+    }
+
+    public void setFotoCryptGuiController(FotoCryptGuiController fotoCryptGuiController) {
+        this.controller = fotoCryptGuiController;
     }
 }
