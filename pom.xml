@@ -97,7 +97,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>nl.tudelft.mmsr.privacy.MainWindow</mainClass>
+                            <mainClass>nl.tudelft.mmsr.privacy.Launcher</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
