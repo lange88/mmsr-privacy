@@ -26,6 +26,7 @@
                 <include>.pmd</include>
                 <include>LICENSE.txt</include>
                 <include>README</include>
+                <include>configuration/*.xml</include>
             </includes>
         </fileSet>
     </fileSets>

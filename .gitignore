@@ -90,3 +90,4 @@ crashlytics-build.properties
 
 # JIRA plugin
 atlassian-ide-plugin.xml
+/ouput.png
