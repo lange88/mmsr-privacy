@@ -5,9 +5,14 @@
  */
 package nl.tudelft.mmsr.privacy.detection;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
@@ -17,6 +22,8 @@ import org.opencv.core.Scalar;
 import org.opencv.highgui.Highgui;
 import org.opencv.objdetect.CascadeClassifier;
 
+import javax.imageio.ImageIO;
+
 /**
  *
  * @author Piotr Tekieli
@@ -24,6 +31,7 @@ import org.opencv.objdetect.CascadeClassifier;
 public class FaceDetection {
 
     private File imageSrcFile;
+    private ImageView imageResult;
         
     public void DetectFaces() {
         System.out.println(System.getProperty("java.library.path"));
@@ -43,9 +51,24 @@ public class FaceDetection {
         String filename = "ouput.png";
         System.out.println(String.format("Writing %s", filename));
         Highgui.imwrite(filename, toProcess);
+        displayResultImage(new File(filename));
+    }
+
+    private void displayResultImage(File file) {
+        try {
+            BufferedImage bufferedImage = ImageIO.read(file);
+            Image image = SwingFXUtils.toFXImage(bufferedImage, null);
+            imageResult.setImage(image);
+        } catch (IOException ex) {
+            System.out.println(ex.getStackTrace());
+        }
     }
 
     public void setImageSrcPath(File file) {
         this.imageSrcFile = file;
+    }
+
+    public void setImageResult(ImageView imageResult) {
+        this.imageResult = imageResult;
     }
 }

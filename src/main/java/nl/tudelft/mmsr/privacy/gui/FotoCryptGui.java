@@ -39,6 +39,7 @@ public class FotoCryptGui {
 
             imageSrc = fotoCryptGuiController.getImageSource();
             imageResult = fotoCryptGuiController.getImageResult();
+            faceDetection.setImageResult(imageResult);
             fotoCryptGuiController.setFaceDetection(faceDetection);
 
             stage.show();
