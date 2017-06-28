@@ -13,6 +13,7 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
+import nl.tudelft.mmsr.privacy.encryption.EncryptionStrategy;
 import nl.tudelft.mmsr.privacy.gui.FotoCryptGuiController;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -35,6 +36,14 @@ public class FaceDetection {
     private ImageView imageResult;
     private Mat image;
     private FotoCryptGuiController controller;
+
+    private FaceDetectionStrategy faceDetectionStrategy;
+    private EncryptionStrategy encryptionStrategy;
+
+    public FaceDetection(FaceDetectionStrategy faceDetectionStrategy, EncryptionStrategy encryptionStrategy) {
+        this.faceDetectionStrategy = faceDetectionStrategy;
+        this.encryptionStrategy = encryptionStrategy;
+    }
 
     public void loadSourceImage() {
         FileChooser fileChooser = new FileChooser();
