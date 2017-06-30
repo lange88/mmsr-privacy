@@ -13,6 +13,7 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
+import nl.tudelft.mmsr.privacy.encryption.EncryptionStrategy;
 import nl.tudelft.mmsr.privacy.gui.FotoCryptGuiController;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -33,8 +34,16 @@ public class FaceDetection {
 
     private File imageSrcFile;
     private ImageView imageResult;
-    private Mat toProcess;
+    private Mat image;
     private FotoCryptGuiController controller;
+
+    private FaceDetectionStrategy faceDetectionStrategy;
+    private EncryptionStrategy encryptionStrategy;
+
+    public FaceDetection(FaceDetectionStrategy faceDetectionStrategy, EncryptionStrategy encryptionStrategy) {
+        this.faceDetectionStrategy = faceDetectionStrategy;
+        this.encryptionStrategy = encryptionStrategy;
+    }
 
     public void loadSourceImage() {
         FileChooser fileChooser = new FileChooser();
@@ -66,21 +75,25 @@ public class FaceDetection {
     public void detectFaces() {
         System.out.println(System.getProperty("java.library.path"));
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+
         CascadeClassifier faceDetector = new CascadeClassifier(new File("configuration/haarcascade_frontalface_alt.xml").getAbsolutePath());
-        toProcess = Highgui.imread(imageSrcFile.getAbsolutePath());
+        image = Highgui.imread(imageSrcFile.getAbsolutePath());
+
         MatOfRect faceDetections = new MatOfRect();
-        faceDetector.detectMultiScale(toProcess, faceDetections);
+
+        faceDetector.detectMultiScale(image, faceDetections);
  
         System.out.println(String.format("Detected %s faces", faceDetections.toArray().length));
- 
+
+        // paint rectangles for faces
         for (Rect rect : faceDetections.toArray()) {
-            Core.rectangle(toProcess, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height),
+            Core.rectangle(image, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height),
                 new Scalar(0, 255, 0), 5);
         }
- 
+
         String filename = "ouput.png";
         System.out.println(String.format("Writing %s", filename));
-        Highgui.imwrite(filename, toProcess);
+        Highgui.imwrite(filename, image);
         loadResultImage(new File(filename));
     }
 
