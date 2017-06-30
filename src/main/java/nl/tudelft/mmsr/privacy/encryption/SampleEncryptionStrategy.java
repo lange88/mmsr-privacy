@@ -2,6 +2,7 @@ package nl.tudelft.mmsr.privacy.encryption;
 
 import com.google.gson.Gson;
 import javafx.scene.image.Image;
+import nl.tudelft.mmsr.privacy.detection.FaceRectangle;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -21,7 +22,7 @@ import java.util.ArrayList;
 public class SampleEncryptionStrategy implements EncryptionStrategy {
 
     @Override
-    public ArrayList<byte[]> encryptImageRegions(ArrayList<BufferedImage> encryptionRegions) {
+    public void encryptImageRegions(ArrayList<FaceRectangle> faceRectangles, String fileName) {
 
         CipherOperations cipher = null;
 
@@ -33,23 +34,11 @@ public class SampleEncryptionStrategy implements EncryptionStrategy {
             e.printStackTrace();
         }
 
-        /* Convert regions to byte arrays */
-        ArrayList<byte[]> byteImageArray = new ArrayList<>();
-        for (BufferedImage image : encryptionRegions) {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            try {
-                ImageIO.write(image, "png", baos);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            byteImageArray.add(baos.toByteArray());
-        }
-
         EncryptionPack pack = null;
 
         /* Encrypt regions */
         try {
-            pack = cipher.encryptFile(byteImageArray);
+            pack = cipher.encryptFile(faceRectangles);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (InvalidKeyException e) {
@@ -63,7 +52,7 @@ public class SampleEncryptionStrategy implements EncryptionStrategy {
         }
 
         if (pack == null) {
-            return null;
+            return;
         }
 
         /* Save KeyPack package - Key & Initialization Vector */
@@ -71,7 +60,7 @@ public class SampleEncryptionStrategy implements EncryptionStrategy {
         String keyPackString = gson.toJson(pack);
         PrintWriter out = null;
         try {
-            out = new PrintWriter("key.json");
+            out = new PrintWriter(fileName + ".encrypted.json");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -90,7 +79,6 @@ public class SampleEncryptionStrategy implements EncryptionStrategy {
         // decryption
         //byte [] decryptedImage = cipher.decrypt(pack.image, kp);*/
 
-        return pack.faces;
     }
 
 

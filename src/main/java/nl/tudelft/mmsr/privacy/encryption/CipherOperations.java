@@ -1,5 +1,7 @@
 package nl.tudelft.mmsr.privacy.encryption;
 
+import nl.tudelft.mmsr.privacy.detection.FaceRectangle;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -20,7 +22,7 @@ public class CipherOperations
         this.cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
     }
 
-    public EncryptionPack encryptFile(ArrayList<byte[]> imageList) throws NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
+    public EncryptionPack encryptFile(ArrayList<FaceRectangle> faceRectangles) throws NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
         byte [] keyBytes = new byte[16];
         new Random().nextBytes(keyBytes);
         SecretKeySpec key = new SecretKeySpec(keyBytes, "AES");
@@ -30,12 +32,11 @@ public class CipherOperations
         IvParameterSpec iv = new IvParameterSpec(ivBytes);
 
         this.cipher.init(Cipher.ENCRYPT_MODE, key, iv);
-        ArrayList<byte[]> encryptedFaces = new ArrayList<>();
-        for (byte[] imageBytes : imageList) {
-            encryptedFaces.add(this.cipher.doFinal(imageBytes));
+        for (FaceRectangle face : faceRectangles) {
+            face.face = this.cipher.doFinal(face.face);
         }
 
-        return new EncryptionPack(encryptedFaces, new KeyPack(keyBytes, ivBytes));
+        return new EncryptionPack(faceRectangles, new KeyPack(keyBytes, ivBytes));
     }
 
     public byte [] decryptFile(byte [] image, KeyPack keyPack) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {

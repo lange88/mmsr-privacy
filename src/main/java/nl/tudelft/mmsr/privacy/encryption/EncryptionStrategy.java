@@ -1,6 +1,7 @@
 package nl.tudelft.mmsr.privacy.encryption;
 
 import javafx.scene.image.Image;
+import nl.tudelft.mmsr.privacy.detection.FaceRectangle;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
 
@@ -13,5 +14,5 @@ import java.util.ArrayList;
 public interface EncryptionStrategy {
     // not sure if returned object should be Mat as well in order to save it
     // with opencv
-    ArrayList<byte[]> encryptImageRegions(ArrayList<BufferedImage> encryptionRegions);
+    void encryptImageRegions(ArrayList<FaceRectangle> faceRectangles, String fileName);
 }
