@@ -12,7 +12,5 @@ import java.util.ArrayList;
  * Created by jeroen on 6/27/17.
  */
 public interface EncryptionStrategy {
-    // not sure if returned object should be Mat as well in order to save it
-    // with opencv
     void encryptImageRegions(ArrayList<FaceRectangle> faceRectangles, String fileName);
 }

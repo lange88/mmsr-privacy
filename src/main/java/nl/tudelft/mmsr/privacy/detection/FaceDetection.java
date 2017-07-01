@@ -14,6 +14,9 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
+import nl.tudelft.mmsr.privacy.encryption.AESDecryptionStrategy;
+import nl.tudelft.mmsr.privacy.encryption.DecryptionStrategy;
+import nl.tudelft.mmsr.privacy.encryption.EncryptionPack;
 import nl.tudelft.mmsr.privacy.encryption.EncryptionStrategy;
 import nl.tudelft.mmsr.privacy.gui.FotoCryptGuiController;
 import org.apache.commons.io.FileUtils;
@@ -38,10 +41,12 @@ public class FaceDetection {
 
     private FaceDetectionStrategy faceDetectionStrategy;
     private EncryptionStrategy encryptionStrategy;
+    private DecryptionStrategy decryptionStrategy;
 
-    public FaceDetection(FaceDetectionStrategy faceDetectionStrategy, EncryptionStrategy encryptionStrategy) {
+    public FaceDetection(FaceDetectionStrategy faceDetectionStrategy, EncryptionStrategy encryptionStrategy, DecryptionStrategy decryptionStrategy) {
         this.faceDetectionStrategy = faceDetectionStrategy;
         this.encryptionStrategy = encryptionStrategy;
+        this.decryptionStrategy = decryptionStrategy;
     }
 
     public void loadSourceImage() {
@@ -94,11 +99,25 @@ public class FaceDetection {
 
         loadResultImage(Mat2BufferedImage(image));
         Imgcodecs.imwrite(FilenameUtils.getBaseName(imageSrcFile.getAbsolutePath()) + ".encrypted." +
-                        FilenameUtils.getExtension(imageSrcFile.getAbsolutePath()), image);
+                   FilenameUtils.getExtension(imageSrcFile.getAbsolutePath()), image);
     }
 
-    public void detectdecryptFaces() {
+    public void decryptFaces() {
+        System.out.println(System.getProperty("java.library.path"));
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+
         image = Imgcodecs.imread(imageSrcFile.getAbsolutePath());
+        EncryptionPack encryptionPack = decryptionStrategy.decryptImageRegions(
+                FilenameUtils.getBaseName(imageSrcFile.getAbsolutePath()) + ".json");
+        Mat submat = null;
+        for (FaceRectangle face : encryptionPack.faces) {
+            Mat m = BufferedImage2Mat(ByteArray2BufferedImage(face.face));
+            submat = image.submat(new Rect(face.x, face.y, face.width, face.height));
+            m.copyTo(submat);
+        }
+        loadResultImage(Mat2BufferedImage(image));
+        Imgcodecs.imwrite(FilenameUtils.getBaseName(imageSrcFile.getAbsolutePath()) + ".original." +
+                FilenameUtils.getExtension(imageSrcFile.getAbsolutePath()), image);
     }
 
     private void loadResultImage(BufferedImage bufferedImage) {
@@ -144,5 +163,22 @@ public class FaceDetection {
             e.printStackTrace();
         }
         return baos.toByteArray();
+    }
+
+    public BufferedImage ByteArray2BufferedImage(byte[] imageData) {
+        ByteArrayInputStream bais = new ByteArrayInputStream(imageData);
+        try {
+            return ImageIO.read(bais);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Mat BufferedImage2Mat(BufferedImage myBufferedImage)
+    {
+        byte[] data = ((DataBufferByte) myBufferedImage.getRaster().getDataBuffer()).getData();
+        Mat mat = new Mat(myBufferedImage.getHeight(), myBufferedImage.getWidth(), CvType.CV_8UC3);
+        mat.put(0, 0, data);
+        return mat;
     }
 }

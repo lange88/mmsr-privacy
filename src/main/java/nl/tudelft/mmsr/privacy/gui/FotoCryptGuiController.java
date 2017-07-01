@@ -56,7 +56,7 @@ public class FotoCryptGuiController implements Initializable {
                 if (decryptionMode == false) {
                     faceDetection.detectFaces();
                 } else {
-                    //faceDetection.decryptFaces();
+                    faceDetection.decryptFaces();
                 }
             }
         });

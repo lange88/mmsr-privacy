@@ -14,4 +14,8 @@ public class EncryptionPack {
         this.faces = faces;
         this.keyPack = keyPack;
     }
+
+    public int countFaces() {
+        return faces.size();
+    }
 }

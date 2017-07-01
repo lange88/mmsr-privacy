@@ -1,14 +1,11 @@
 package nl.tudelft.mmsr.privacy.encryption;
 
 import com.google.gson.Gson;
-import javafx.scene.image.Image;
 import nl.tudelft.mmsr.privacy.detection.FaceRectangle;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -19,7 +16,7 @@ import java.util.ArrayList;
 /**
  * Created by jeroen on 6/28/17.
  */
-public class SampleEncryptionStrategy implements EncryptionStrategy {
+public class AESEncryptionStrategy implements EncryptionStrategy {
 
     @Override
     public void encryptImageRegions(ArrayList<FaceRectangle> faceRectangles, String fileName) {
@@ -66,19 +63,6 @@ public class SampleEncryptionStrategy implements EncryptionStrategy {
         }
         out.write(keyPackString);
         out.close();
-
-        /* retrieve key file
-        KeyPack kp = gson.fromJson(new FileReader("src/key.json"), KeyPack.class);
-
-        // testing
-        System.out.println(Arrays.toString(pack.keyPack.key));
-        System.out.println(Arrays.toString(pack.keyPack.iv));
-        System.out.println(Arrays.toString(kp.key));
-        System.out.println(Arrays.toString(kp.iv));
-
-        // decryption
-        //byte [] decryptedImage = cipher.decrypt(pack.image, kp);*/
-
     }
 
 
