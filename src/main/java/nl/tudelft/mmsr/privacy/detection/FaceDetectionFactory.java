@@ -1,6 +1,7 @@
 package nl.tudelft.mmsr.privacy.detection;
 
-import nl.tudelft.mmsr.privacy.encryption.SampleEncryptionStrategy;
+import nl.tudelft.mmsr.privacy.encryption.AESDecryptionStrategy;
+import nl.tudelft.mmsr.privacy.encryption.AESEncryptionStrategy;
 
 /**
  * Created by jeroen on 6/27/17.
@@ -13,6 +14,6 @@ public class FaceDetectionFactory {
         // detection strategies
 
 
-        return new FaceDetection(new HaarCascadeStrategy(), new SampleEncryptionStrategy());
+        return new FaceDetection(new HaarCascadeStrategy(), new AESEncryptionStrategy(), new AESDecryptionStrategy());
     }
 }

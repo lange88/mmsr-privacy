@@ -18,18 +18,22 @@ import java.util.ResourceBundle;
 public class FotoCryptGuiController implements Initializable {
 
     private FaceDetection faceDetection;
+    private boolean decryptionMode = false;
 
     @FXML
-    private MenuItem menuLoad;
+    private MenuItem menuLoadFile;
 
     @FXML
-    private MenuItem menuSave;
+    private MenuItem menuEncryption;
 
     @FXML
-    private MenuItem menuAddToList;
+    private MenuItem menuDecryption;
 
     @FXML
     private MenuItem menuAbout;
+
+    @FXML
+    private TextField modeField;
 
     @FXML
     private Button buttonEncrypt;
@@ -49,35 +53,43 @@ public class FotoCryptGuiController implements Initializable {
         buttonEncrypt.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                faceDetection.detectFaces();
+                if (decryptionMode == false) {
+                    faceDetection.detectFaces();
+                } else {
+                    faceDetection.decryptFaces();
+                }
             }
         });
         initializeMenu();
     }
 
     private void initializeMenu() {
-        menuLoad.setOnAction(new EventHandler<ActionEvent>() {
+        menuLoadFile.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 faceDetection.loadSourceImage();
-            }
-        });
-        menuSave.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-
-            }
-        });
-        menuAddToList.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-
             }
         });
         menuAbout.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
 
+            }
+        });
+
+        menuEncryption.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                modeField.setText("Current Mode: Encryption");
+                decryptionMode = false;
+            }
+        });
+
+        menuDecryption.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                modeField.setText("Current Mode: Decryption");
+                decryptionMode = true;
             }
         });
     }
