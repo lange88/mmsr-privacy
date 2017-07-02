@@ -5,7 +5,8 @@ import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.scene.layout.AnchorPane;
-import nl.tudelft.mmsr.privacy.detection.FaceDetection;
+import nl.tudelft.mmsr.privacy.detection.FaceOperation;
+import org.opencv.core.Core;
 
 /**
  * Created by Jeroen Vrijenhoef on 6/25/17.
@@ -14,31 +15,32 @@ public class FotoCryptGui {
     private ImageView imageSrc;
     private ImageView imageResult;
 
-    public FotoCryptGui(FaceDetection faceDetection, Stage stage) {
-        createStage(faceDetection, stage);
+    public FotoCryptGui(FaceOperation FaceOperation, Stage stage) {
+        createStage(FaceOperation, stage);
     }
 
-    public void createStage(FaceDetection faceDetection, Stage stage) {
+    public void createStage(FaceOperation FaceOperation, Stage stage) {
         try {
-            // load fxml file from resource and create a new stage for the dialog
+            /* Load OpenCV SO or DLL library */
+            System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+
+            /* Load FXML file from resource and create a new stage for the dialog */
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(FotoCryptGui.class.getResource("/mmsr-privacy-gui.fxml"));
             AnchorPane page = loader.load();
             FotoCryptGuiController fotoCryptGuiController = loader.getController();
 
-            // init the scene and set dialog properties
+            /* Init the scene and set dialog properties */
             Scene scene = new Scene(page);
             stage.setScene(scene);
-            //Image icon = new Image(FotoCryptGui.class.getResourceAsStream("/icon.png"));
-            //stage.getIcons().add(icon);
             stage.setTitle("FotoCrypt v1.0");
             stage.setResizable(false);
 
             imageSrc = fotoCryptGuiController.getImageSource();
             imageResult = fotoCryptGuiController.getImageResult();
-            faceDetection.setImageResult(imageResult);
-            faceDetection.setFotoCryptGuiController(fotoCryptGuiController);
-            fotoCryptGuiController.setFaceDetection(faceDetection);
+            FaceOperation.setImageResult(imageResult);
+            FaceOperation.setFotoCryptGuiController(fotoCryptGuiController);
+            fotoCryptGuiController.setFaceOperation(FaceOperation);
 
             stage.show();
 

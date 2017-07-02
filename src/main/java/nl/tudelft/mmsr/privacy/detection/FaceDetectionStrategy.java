@@ -13,5 +13,5 @@ public interface FaceDetectionStrategy {
      * Function that does that actual face detection on an image
      * @return
      */
-    MatOfRect detectFaces(Mat image);
+    void detectFaces(boolean rsa);
 }
