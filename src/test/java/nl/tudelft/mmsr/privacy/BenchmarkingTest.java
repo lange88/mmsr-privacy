@@ -1,5 +1,6 @@
 package nl.tudelft.mmsr.privacy;
 
+import javafx.scene.image.ImageView;
 import nl.tudelft.mmsr.privacy.detection.FaceDetection;
 import nl.tudelft.mmsr.privacy.detection.FaceDetectionFactory;
 import nl.tudelft.mmsr.privacy.detection.HaarCascadeStrategy;
@@ -10,6 +11,7 @@ import nl.tudelft.mmsr.privacy.encryption.EncryptionStrategy;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.opencv.core.Core;
 
 import java.io.File;
 import java.util.Iterator;
@@ -24,6 +26,7 @@ public class BenchmarkingTest {
     @Before
     public void setUp() {
         factory = new FaceDetectionFactory();
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
 
     @Test
@@ -46,6 +49,7 @@ public class BenchmarkingTest {
             File image = (File) it.next();
 
             detection.setImageSrcPath(image);
+            detection.setImageResult(new ImageView());
             detection.detectFaces();
         }
     }
