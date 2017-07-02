@@ -76,11 +76,9 @@ public class FaceDetection {
         System.out.println(System.getProperty("java.library.path"));
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
-        CascadeClassifier faceDetector = new CascadeClassifier(new File("configuration/haarcascade_frontalface_alt.xml").getAbsolutePath());
         image = Imgcodecs.imread(imageSrcFile.getAbsolutePath());
 
-        MatOfRect faceDetections = new MatOfRect();
-        faceDetector.detectMultiScale(image, faceDetections);
+        MatOfRect faceDetections = faceDetectionStrategy.detectFaces(image);
 
         ArrayList<FaceRectangle> faceRectangles = new ArrayList<>();
 

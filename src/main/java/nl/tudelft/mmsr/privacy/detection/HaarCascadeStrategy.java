@@ -13,7 +13,7 @@ public class HaarCascadeStrategy implements FaceDetectionStrategy {
 
     @Override
     public MatOfRect detectFaces(Mat image) {
-        CascadeClassifier faceDetector = new CascadeClassifier(new File("configuration/haarcascade_frontalface_alt_tree.xml").getAbsolutePath());
+        CascadeClassifier faceDetector = new CascadeClassifier(new File("configuration/haarcascade_frontalface_alt.xml").getAbsolutePath());
 
         MatOfRect faceDetections = new MatOfRect();
         faceDetector.detectMultiScale(image, faceDetections);
