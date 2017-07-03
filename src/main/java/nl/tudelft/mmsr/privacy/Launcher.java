@@ -5,7 +5,7 @@ import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import nl.tudelft.mmsr.privacy.detection.FaceDetection;
+import nl.tudelft.mmsr.privacy.detection.FaceOperation;
 import nl.tudelft.mmsr.privacy.detection.FaceDetectionFactory;
 import nl.tudelft.mmsr.privacy.gui.FotoCryptGui;
 
@@ -16,7 +16,7 @@ public class Launcher extends Application {
 
     private FotoCryptGui fotoCryptGui;
 
-    private FaceDetection faceDetection;
+    private FaceOperation FaceOperation;
 
     public static void main(String[] args) {
         launch(args);
@@ -28,8 +28,8 @@ public class Launcher extends Application {
     }
 
     public void launchGui(Stage theStage) {
-        faceDetection = makeFaceDetection();
-        fotoCryptGui = new FotoCryptGui(faceDetection, theStage);
+        FaceOperation = makeFaceDetection();
+        fotoCryptGui = new FotoCryptGui(FaceOperation, theStage);
 
         theStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             public void handle(WindowEvent we) {
@@ -38,7 +38,7 @@ public class Launcher extends Application {
         });
     }
 
-    private FaceDetection makeFaceDetection() {
+    private FaceOperation makeFaceDetection() {
         FaceDetectionFactory factory = new FaceDetectionFactory();
         return factory.createFaceDetection();
     }

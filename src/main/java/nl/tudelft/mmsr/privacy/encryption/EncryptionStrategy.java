@@ -13,4 +13,5 @@ import java.util.ArrayList;
  */
 public interface EncryptionStrategy {
     void encryptImageRegions(ArrayList<FaceRectangle> faceRectangles, String fileName);
+
 }
