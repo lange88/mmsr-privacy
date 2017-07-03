@@ -96,7 +96,69 @@ public class FaceOperation implements FaceDetectionStrategy{
                     FilenameUtils.getExtension(imageSrcFile.getAbsolutePath()), image);
         }
         else {
-
+			// Initialize cipher
+            Cipher RSAcipher = null;
+            try {
+                 RSAcipher = Cipher.getInstance("RSA");
+            } catch (NoSuchAlgorithmException ex) {
+                ex.printStackTrace();
+            } catch (NoSuchPaddingException ex) {
+                ex.printStackTrace();
+            }
+            // Read key file
+            byte[] keyBytes = null;
+            try {
+                keyBytes = Files.readAllBytes(RSAfile.toPath());
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            // Create encryption key
+            X509EncodedKeySpec spec = new X509EncodedKeySpec(keyBytes);
+            KeyFactory kf = null;
+            try {
+                 kf = KeyFactory.getInstance("RSA");
+            } catch (NoSuchAlgorithmException ex) {
+                ex.printStackTrace();
+            }
+            PublicKey publicKey = null;
+            try {
+                 publicKey = kf.generatePublic(spec);
+            } catch (InvalidKeySpecException ex) {
+                ex.printStackTrace();
+            }
+            //Initialize cipher
+            try {
+                RSAcipher.init(Cipher.ENCRYPT_MODE, publicKey);
+            } catch (InvalidKeyException ex) {
+                ex.printStackTrace();
+            }
+            
+            /* Encrypt regions */
+            EncryptionPack pack = null;
+            try {
+                 for (FaceRectangle face : faceRectangles) {
+                    face.face = RSAcipher.doFinal(face.face);
+                }
+                pack = new EncryptionPack(faceRectangles, null);
+                
+            } catch (IllegalBlockSizeException e) {
+                e.printStackTrace();
+            } catch (BadPaddingException e) {
+                e.printStackTrace();
+            }
+         
+         
+            // Save faces to file
+            Gson gson = new Gson();
+            String keyPackString = gson.toJson(imageSrcFile.getAbsolutePath());
+            PrintWriter out = null;
+            try {
+                out = new PrintWriter(imageSrcFile.getAbsolutePath() + ".encrypted.json");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            out.write(keyPackString);
+            out.close();
         }
     }
 
