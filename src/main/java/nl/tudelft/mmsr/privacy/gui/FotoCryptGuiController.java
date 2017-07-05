@@ -21,7 +21,9 @@ public class FotoCryptGuiController implements Initializable {
 
     private FaceOperation FaceOperation;
     private boolean decryptionMode = false;
-    private boolean aesmodus = true;
+    private String currentClasifier = "configuration/haarcascade_frontalface_alt.xml";
+    private String filter = "gaussian";
+    private int correctionParam = 0;
 
     @FXML
     private MenuItem menuLoadFile;
@@ -36,13 +38,28 @@ public class FotoCryptGuiController implements Initializable {
     private MenuItem menuSelectPK;
 
     @FXML
-    private MenuItem menuEncryptRSA;
-
-    @FXML
-    private MenuItem menuDecryptRSA;
-
-    @FXML
     private MenuItem menuAbout;
+
+    @FXML
+    private MenuItem buttondefault;
+
+    @FXML
+    private MenuItem buttonalternative1;
+
+    @FXML
+    private MenuItem buttonalternative2;
+
+    @FXML
+    private MenuItem buttontree;
+
+    @FXML
+    private Button buttonCalculate;
+
+    @FXML
+    private TextArea textField;
+
+    @FXML
+    private ComboBox comboBox;
 
     @FXML
     private TextField modeField;
@@ -62,28 +79,42 @@ public class FotoCryptGuiController implements Initializable {
     @Override // This method is called by the FXMLLoader when initialization is complete
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
         assert buttonEncrypt != null;
-        buttonEncrypt.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                if (decryptionMode == false) {
-                    FaceOperation.detectFaces(!aesmodus);
-                } else {
-                    FaceOperation.decryptFaces(!aesmodus);
-                }
-            }
-        });
+        assert buttonCalculate != null;
+
         initializeMenu();
     }
 
     private void initializeMenu() {
+
         menuLoadFile.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 DialogOperations dialogOperations = new DialogOperations(FaceOperation.getController());
                 File srcImage = dialogOperations.loadSourceImage();
                 FaceOperation.setImageSrcPath(srcImage);
+                FaceOperation.detectFaces(FaceOperation.setCascadeClassifier(currentClasifier));
             }
         });
+
+        buttonCalculate.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                FaceOperation.displayFaces(correctionParam);
+            }
+        });
+
+        buttonEncrypt.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+
+            public void handle(ActionEvent event) {
+                if (decryptionMode == false) {
+                    //FaceOperation.encryptFaces();
+                } else {
+                    //FaceOperation.decryptFaces();
+                }
+            }
+        });
+
         menuAbout.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -95,20 +126,18 @@ public class FotoCryptGuiController implements Initializable {
         menuEncryption.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                modeField.setText("Current Mode: Encryption - AES CBC");
+                modeField.setText("Current Mode: Encryption");
                 buttonEncrypt.setText("Encrypt");
                 decryptionMode = false;
-                aesmodus = true;
             }
         });
 
         menuDecryption.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                modeField.setText("Current Mode: Decryption - AES CBC");
+                modeField.setText("Current Mode: Decryption");
                 buttonEncrypt.setText("Decrypt");
                 decryptionMode = true;
-                aesmodus = true;
             }
         });
 
@@ -120,27 +149,6 @@ public class FotoCryptGuiController implements Initializable {
                 FaceOperation.setRSAfile(srcRSA);
             }
         });
-
-        menuEncryptRSA.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                modeField.setText("Current Mode: Encryption - RSA");
-                buttonEncrypt.setText("Encrypt");
-                decryptionMode = false;
-                aesmodus = false;
-            }
-        });
-
-        menuDecryptRSA.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                modeField.setText("Current Mode: Decryption - RSA");
-                buttonEncrypt.setText("Decrypt");
-                decryptionMode = true;
-                aesmodus = false;
-            }
-        });
-
     }
 
     public void setFaceOperation(FaceOperation faceOperation) {

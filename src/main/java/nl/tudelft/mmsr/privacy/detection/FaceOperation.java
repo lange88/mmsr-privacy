@@ -6,28 +6,20 @@
 package nl.tudelft.mmsr.privacy.detection;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
 import java.io.*;
 import java.util.ArrayList;
 
 import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.control.Alert;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.stage.FileChooser;
-import nl.tudelft.mmsr.privacy.encryption.AESDecryptionStrategy;
 import nl.tudelft.mmsr.privacy.encryption.DecryptionStrategy;
 import nl.tudelft.mmsr.privacy.encryption.EncryptionPack;
 import nl.tudelft.mmsr.privacy.encryption.EncryptionStrategy;
 import nl.tudelft.mmsr.privacy.gui.FotoCryptGuiController;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
-
-import javax.imageio.ImageIO;
 
 /**
  *
@@ -39,6 +31,8 @@ public class FaceOperation implements FaceDetectionStrategy{
     private File RSAfile;
     private ImageView imageResult;
     private Mat image;
+    private MatOfRect faceDetections;
+    private ArrayList<FaceRectangle> faceRectangles = new ArrayList<>();
     private FotoCryptGuiController controller;
 
     private EncryptionStrategy encryptionStrategy;
@@ -51,57 +45,71 @@ public class FaceOperation implements FaceDetectionStrategy{
         this.openCVOperations = openCVOperations;
     }
 
-    public void detectFaces(boolean rsa) {
+    public void detectFaces(CascadeClassifier cascadeClassifier) {
         image = Imgcodecs.imread(imageSrcFile.getAbsolutePath());
-        MatOfRect faceDetections = new MatOfRect();
-        setCascadeFilter().detectMultiScale(image, faceDetections);
-        ArrayList<FaceRectangle> faceRectangles = new ArrayList<>();
-        System.out.println(String.format("Detected %s faces", faceDetections.toArray().length));
+        faceDetections = new MatOfRect();
+        cascadeClassifier.detectMultiScale(image, faceDetections);
+    }
 
-        /* Apply anonimization filters */
+    public void encryptFaces(String filter) {
         for (Rect rect : faceDetections.toArray()) {
-            /*Imgproc.rectangle(image, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height),
-                new Scalar(0, 255, 0), 5);*/
             faceRectangles.add(new FaceRectangle(openCVOperations.BufferedImage2ByteArray(openCVOperations.Mat2BufferedImage(image.submat(rect)),
                     FilenameUtils.getExtension(imageSrcFile.getAbsolutePath())), rect.x, rect.y, rect.width, rect.height));
-            Imgproc.GaussianBlur(image.submat(rect), image.submat(rect), new Size(55, 55), 55);
+
+            switch(filter) {
+                case "gaussianblur" :
+                    Filters selFilter = new Filters();
+                    selFilter.GaussianBlur(image.submat(rect), new Size(55, 55), 55);
+                    break;
+                case "erode" :
+                    Filters erodeFilter = new Filters(6);
+                    erodeFilter.Erode(image.submat(rect));
+                    break;
+                case "dilate" :
+                    Filters dilateFilter = new Filters(6);
+                    dilateFilter.Dilate(image.submat(rect));
+                    break;
+                default :
+                    break;
+            }
         }
 
-        if (rsa == false) {
-            encryptionStrategy.encryptImageRegions(faceRectangles, FilenameUtils.getBaseName(imageSrcFile.getAbsolutePath()));
-        }
-        else {
-
-        }
+        encryptionStrategy.encryptImageRegions(faceRectangles, FilenameUtils.getBaseName(imageSrcFile.getAbsolutePath()));
 
         loadResultImage(openCVOperations.Mat2BufferedImage(image));
         Imgcodecs.imwrite(FilenameUtils.getBaseName(imageSrcFile.getAbsolutePath()) + ".encrypted." +
-                   FilenameUtils.getExtension(imageSrcFile.getAbsolutePath()), image);
+                FilenameUtils.getExtension(imageSrcFile.getAbsolutePath()), image);
     }
 
-    public void decryptFaces(boolean rsa) {
-        // nie wiem ile z tego możesz wykorzystać ponownie, sam oceń i wydziel z funkcji
-        if (rsa == false) {
-            image = Imgcodecs.imread(imageSrcFile.getAbsolutePath());
-            EncryptionPack encryptionPack = decryptionStrategy.decryptImageRegions(
-                    FilenameUtils.getBaseName(imageSrcFile.getAbsolutePath()) + ".json");
-            Mat submat = null;
-            for (FaceRectangle face : encryptionPack.faces) {
-                Mat m = openCVOperations.BufferedImage2Mat(openCVOperations.ByteArray2BufferedImage(face.face));
-                submat = image.submat(new Rect(face.x, face.y, face.width, face.height));
-                m.copyTo(submat);
-            }
-            loadResultImage(openCVOperations.Mat2BufferedImage(image));
-            Imgcodecs.imwrite(FilenameUtils.getBaseName(imageSrcFile.getAbsolutePath()) + ".original." +
-                    FilenameUtils.getExtension(imageSrcFile.getAbsolutePath()), image);
-        }
-        else {
+    public void displayFaces(int correctionParam) {
+        Mat imageTemp = image; /* Copy for temporary changes */
 
+        /* Apply anonimization filters */
+        for (Rect rect : faceDetections.toArray()) {
+            Imgproc.rectangle(imageTemp, new Point(rect.x - correctionParam, rect.y - correctionParam),
+                    new Point(rect.x + rect.width + correctionParam, rect.y + rect.height + correctionParam),
+                    new Scalar(0, 255, 0), 5);
         }
+        loadResultImage(openCVOperations.Mat2BufferedImage(imageTemp));
     }
 
-    private CascadeClassifier setCascadeFilter() {
-        return new CascadeClassifier(new File("configuration/haarcascade_frontalface_alt.xml").getAbsolutePath());
+    public void decryptFaces() {
+        image = Imgcodecs.imread(imageSrcFile.getAbsolutePath());
+        EncryptionPack encryptionPack = decryptionStrategy.decryptImageRegions(
+        FilenameUtils.getBaseName(imageSrcFile.getAbsolutePath()) + ".json");
+        Mat submat = null;
+        for (FaceRectangle face : encryptionPack.faces) {
+            Mat m = openCVOperations.BufferedImage2Mat(openCVOperations.ByteArray2BufferedImage(face.face));
+            submat = image.submat(new Rect(face.x, face.y, face.width, face.height));
+            m.copyTo(submat);
+        }
+        loadResultImage(openCVOperations.Mat2BufferedImage(image));
+        Imgcodecs.imwrite(FilenameUtils.getBaseName(imageSrcFile.getAbsolutePath()) + ".original." +
+            FilenameUtils.getExtension(imageSrcFile.getAbsolutePath()), image);
+    }
+
+    public CascadeClassifier setCascadeClassifier(String pathname) {
+        return new CascadeClassifier(new File(pathname).getAbsolutePath());
     }
 
     private void loadResultImage(BufferedImage bufferedImage) {
