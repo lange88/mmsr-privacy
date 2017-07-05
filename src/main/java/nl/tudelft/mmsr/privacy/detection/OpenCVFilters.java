@@ -8,16 +8,16 @@ import org.opencv.imgproc.Imgproc;
 /**
  * Created by ptekieli on 7/5/17.
  */
-public class Filters {
+public class OpenCVFilters {
 
     int erosion_size = 6;
     Mat element = Imgproc.getStructuringElement(Imgproc.MORPH_CROSS,
             new Size(2 * erosion_size + 1, 2 * erosion_size + 1),
             new Point(erosion_size, erosion_size));
 
-    public Filters() {}
+    public OpenCVFilters() {}
 
-    public Filters(int erosion_size) {
+    public OpenCVFilters(int erosion_size) {
         this.erosion_size = erosion_size;
     }
 

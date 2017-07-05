@@ -32,6 +32,8 @@ public class FaceOperation implements FaceDetectionStrategy{
     private ImageView imageResult;
     private Mat image;
     private MatOfRect faceDetections;
+    private double correctionParamTempWidth = 0;
+    private double correctionParamTempHeight = 0;
     private ArrayList<FaceRectangle> faceRectangles = new ArrayList<>();
     private FotoCryptGuiController controller;
 
@@ -52,21 +54,27 @@ public class FaceOperation implements FaceDetectionStrategy{
     }
 
     public void encryptFaces(String filter) {
+        image = Imgcodecs.imread(imageSrcFile.getAbsolutePath());
         for (Rect rect : faceDetections.toArray()) {
+            rect.x =  rect.x - (int)(correctionParamTempWidth / 2);
+            rect.y = rect.y - (int)(correctionParamTempHeight / 2);
+            rect.width = rect.width + (int)(correctionParamTempWidth);
+            rect.height = rect.height + (int)(correctionParamTempHeight);
+
             faceRectangles.add(new FaceRectangle(openCVOperations.BufferedImage2ByteArray(openCVOperations.Mat2BufferedImage(image.submat(rect)),
                     FilenameUtils.getExtension(imageSrcFile.getAbsolutePath())), rect.x, rect.y, rect.width, rect.height));
 
             switch(filter) {
                 case "gaussianblur" :
-                    Filters selFilter = new Filters();
+                    OpenCVFilters selFilter = new OpenCVFilters();
                     selFilter.GaussianBlur(image.submat(rect), new Size(55, 55), 55);
                     break;
                 case "erode" :
-                    Filters erodeFilter = new Filters(6);
+                    OpenCVFilters erodeFilter = new OpenCVFilters(6);
                     erodeFilter.Erode(image.submat(rect));
                     break;
                 case "dilate" :
-                    Filters dilateFilter = new Filters(6);
+                    OpenCVFilters dilateFilter = new OpenCVFilters(6);
                     dilateFilter.Dilate(image.submat(rect));
                     break;
                 default :
@@ -82,15 +90,17 @@ public class FaceOperation implements FaceDetectionStrategy{
     }
 
     public void displayFaces(int correctionParam) {
-        Mat imageTemp = image; /* Copy for temporary changes */
-
-        /* Apply anonimization filters */
+        image = Imgcodecs.imread(imageSrcFile.getAbsolutePath());
         for (Rect rect : faceDetections.toArray()) {
-            Imgproc.rectangle(imageTemp, new Point(rect.x - correctionParam, rect.y - correctionParam),
-                    new Point(rect.x + rect.width + correctionParam, rect.y + rect.height + correctionParam),
+            correctionParamTempWidth = correctionParam * rect.width / 100;
+            correctionParamTempHeight = correctionParam * rect.height / 100;
+            Imgproc.rectangle(image,
+                    new Point(rect.x - (correctionParamTempWidth / 2), rect.y - (correctionParamTempHeight / 2)),
+                    new Point(rect.x + rect.width + (correctionParamTempWidth / 2), rect.y + rect.height + (correctionParamTempHeight / 2)),
                     new Scalar(0, 255, 0), 5);
         }
-        loadResultImage(openCVOperations.Mat2BufferedImage(imageTemp));
+
+        loadResultImage(openCVOperations.Mat2BufferedImage(image));
     }
 
     public void decryptFaces() {

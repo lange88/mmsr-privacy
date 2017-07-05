@@ -6,7 +6,6 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -40,6 +39,13 @@
                   <MenuItem fx:id="buttontree" mnemonicParsing="false" text="Tree" />
               </items>
             </Menu>
+            <Menu mnemonicParsing="false" text="Filters">
+              <items>
+                <MenuItem fx:id="menugaus" mnemonicParsing="false" text="Gaussian Blur" />
+                  <MenuItem fx:id="menuerode" mnemonicParsing="false" text="Erode" />
+                  <MenuItem fx:id="menudilate" mnemonicParsing="false" text="Dilate" />
+              </items>
+            </Menu>
           <Menu mnemonicParsing="false" text="About">
             <items>
               <MenuItem fx:id="menuAbout" mnemonicParsing="false" text="About" />
@@ -57,12 +63,11 @@
            </font></Label>
        <ImageView fx:id="imageSrc" fitHeight="277.0" fitWidth="340.0" layoutX="22.0" layoutY="59.0" pickOnBounds="true" preserveRatio="true" />
        <ImageView fx:id="imageResult" fitHeight="277.0" fitWidth="340.0" layoutX="379.0" layoutY="59.0" pickOnBounds="true" preserveRatio="true" />
-       <TextArea fx:id="textField" editable="false" layoutX="22.0" layoutY="407.0" prefHeight="60.0" prefWidth="296.0" text="No Available Keys or Initialization Vectors" wrapText="true" />
-       <TextField fx:id="textImagePath" editable="false" layoutX="383.0" layoutY="348.0" prefHeight="26.0" prefWidth="340.0" text="Current File: No Image" />
-       <Button fx:id="buttonEncrypt" layoutX="571.0" layoutY="394.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="127.0" text="Encrypt" />
-      <TextField fx:id="modeField" alignment="CENTER" editable="false" layoutX="380.0" layoutY="441.0" prefHeight="26.0" prefWidth="340.0" text="Current Mode: Encryption" />
-      <Label layoutX="22.0" layoutY="348.0" prefHeight="26.0" prefWidth="105.0" text="Rectangle Size" />
-      <ComboBox fx:id="comboBox" layoutX="131.0" layoutY="348.0" prefHeight="26.0" prefWidth="187.0" />
-      <Button fx:id="buttonCalculate" layoutX="401.0" layoutY="394.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="127.0" text="Calculate" />
+       <TextField fx:id="textImagePath" editable="false" layoutX="22.0" layoutY="348.0" prefHeight="26.0" prefWidth="340.0" text="Current File: No Image" />
+       <Button fx:id="buttonEncrypt" layoutX="572.0" layoutY="407.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="127.0" text="Encrypt" />
+      <TextField fx:id="modeField" alignment="CENTER" editable="false" layoutX="379.0" layoutY="348.0" prefHeight="26.0" prefWidth="340.0" text="Current Mode: Encryption" />
+      <Label layoutX="22.0" layoutY="407.0" prefHeight="26.0" prefWidth="105.0" text="Zone Multiplier" />
+      <ComboBox fx:id="comboBox" layoutX="153.0" layoutY="407.0" prefHeight="26.0" prefWidth="187.0" />
+      <Button fx:id="buttonCalculate" layoutX="401.0" layoutY="407.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="127.0" text="Preview" />
    </children>
 </AnchorPane>
