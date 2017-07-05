@@ -4,12 +4,14 @@ import com.google.gson.Gson;
 import nl.tudelft.mmsr.privacy.detection.FaceRectangle;
 
 import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import java.io.*;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
+import java.nio.file.Files;
+import java.security.*;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
 
 
@@ -19,7 +21,7 @@ import java.util.ArrayList;
 public class AESEncryptionStrategy implements EncryptionStrategy {
 
     @Override
-    public void encryptImageRegions(ArrayList<FaceRectangle> faceRectangles, String fileName) {
+    public void encryptImageRegions(ArrayList<FaceRectangle> faceRectangles, String fileName, File RSAfile) {
 
         CipherOperations cipher = null;
 
@@ -50,6 +52,54 @@ public class AESEncryptionStrategy implements EncryptionStrategy {
 
         if (pack == null) {
             return;
+        }
+
+        /* Perform RSA on IV & Key */
+        Cipher RSAcipher = null;
+        try {
+            RSAcipher = Cipher.getInstance("RSA");
+        } catch (NoSuchAlgorithmException ex) {
+            ex.printStackTrace();
+        } catch (NoSuchPaddingException ex) {
+            ex.printStackTrace();
+        }
+        // Read key file
+        byte[] keyBytes = null;
+        try {
+            keyBytes = Files.readAllBytes(RSAfile.toPath());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        // Create encryption key
+        X509EncodedKeySpec spec = new X509EncodedKeySpec(keyBytes);
+        KeyFactory kf = null;
+        try {
+            kf = KeyFactory.getInstance("RSA");
+        } catch (NoSuchAlgorithmException ex) {
+            ex.printStackTrace();
+        }
+
+        PublicKey publicKey = null;
+        try {
+            publicKey = kf.generatePublic(spec);
+        } catch (InvalidKeySpecException ex) {
+            ex.printStackTrace();
+        }
+        try {
+            //Initialize cipher
+            RSAcipher.init(Cipher.ENCRYPT_MODE, publicKey);
+        } catch (InvalidKeyException ex) {
+            ex.printStackTrace();
+        }
+
+        try {
+                /* Encrypt regions */
+            pack.keyPack.iv = RSAcipher.doFinal(pack.keyPack.iv);
+            pack.keyPack.key = RSAcipher.doFinal(pack.keyPack.key);
+        } catch (IllegalBlockSizeException ex) {
+            ex.printStackTrace();
+        } catch (BadPaddingException ex) {
+            ex.printStackTrace();
         }
 
         /* Save KeyPack package - Key & Initialization Vector */

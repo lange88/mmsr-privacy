@@ -82,7 +82,7 @@ public class FaceOperation implements FaceDetectionStrategy{
             }
         }
 
-        encryptionStrategy.encryptImageRegions(faceRectangles, FilenameUtils.getBaseName(imageSrcFile.getAbsolutePath()));
+        encryptionStrategy.encryptImageRegions(faceRectangles, FilenameUtils.getBaseName(imageSrcFile.getAbsolutePath()), RSAfile);
 
         loadResultImage(openCVOperations.Mat2BufferedImage(image));
         Imgcodecs.imwrite(FilenameUtils.getBaseName(imageSrcFile.getAbsolutePath()) + ".encrypted." +
@@ -106,7 +106,7 @@ public class FaceOperation implements FaceDetectionStrategy{
     public void decryptFaces() {
         image = Imgcodecs.imread(imageSrcFile.getAbsolutePath());
         EncryptionPack encryptionPack = decryptionStrategy.decryptImageRegions(
-        FilenameUtils.getBaseName(imageSrcFile.getAbsolutePath()) + ".json");
+        FilenameUtils.getBaseName(imageSrcFile.getAbsolutePath()) + ".json", RSAfile);
         Mat submat = null;
         for (FaceRectangle face : encryptionPack.faces) {
             Mat m = openCVOperations.BufferedImage2Mat(openCVOperations.ByteArray2BufferedImage(face.face));
@@ -114,7 +114,7 @@ public class FaceOperation implements FaceDetectionStrategy{
             m.copyTo(submat);
         }
         loadResultImage(openCVOperations.Mat2BufferedImage(image));
-        Imgcodecs.imwrite(FilenameUtils.getBaseName(imageSrcFile.getAbsolutePath()) + ".original." +
+        Imgcodecs.imwrite(FilenameUtils.getBaseName(imageSrcFile.getAbsolutePath()) + ".decrypted." +
             FilenameUtils.getExtension(imageSrcFile.getAbsolutePath()), image);
     }
 
