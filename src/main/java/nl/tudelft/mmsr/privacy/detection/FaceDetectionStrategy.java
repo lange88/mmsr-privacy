@@ -2,6 +2,7 @@ package nl.tudelft.mmsr.privacy.detection;
 
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
+import org.opencv.objdetect.CascadeClassifier;
 
 
 /**
@@ -13,5 +14,6 @@ public interface FaceDetectionStrategy {
      * Function that does that actual face detection on an image
      * @return
      */
-    void detectFaces(boolean rsa);
+    void detectFaces(CascadeClassifier cascadeClassifier);
+    void displayFaces(int correctionParam);
 }

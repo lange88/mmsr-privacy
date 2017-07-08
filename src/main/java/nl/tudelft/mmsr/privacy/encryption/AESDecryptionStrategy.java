@@ -4,13 +4,17 @@ import com.google.gson.Gson;
 import nl.tudelft.mmsr.privacy.detection.FaceRectangle;
 
 import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.security.*;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Arrays;
 
 /**
@@ -18,7 +22,7 @@ import java.util.Arrays;
  */
 public class AESDecryptionStrategy implements DecryptionStrategy{
     @Override
-    public EncryptionPack decryptImageRegions(String pathToDecrypt) {
+    public EncryptionPack decryptImageRegions(String pathToDecrypt, File RSAfile) {
         /* Prepare cipher */
         CipherOperations cipher = null;
 
@@ -37,6 +41,48 @@ public class AESDecryptionStrategy implements DecryptionStrategy{
             encryptionPack = gson.fromJson(new FileReader(pathToDecrypt), EncryptionPack.class);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+        }
+
+        /* Decrypt IV & Key using RSA */
+        Cipher RSAcipher = null;
+        try {
+            RSAcipher = Cipher.getInstance("RSA");
+        } catch (NoSuchAlgorithmException ex) {
+            ex.printStackTrace();
+        } catch (NoSuchPaddingException ex) {
+            ex.printStackTrace();
+        }
+        // Read key file
+        byte[] keyBytes = null;
+        try {
+            keyBytes = Files.readAllBytes(RSAfile.toPath());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        // Create decryption key
+        PrivateKey privateKey = null;
+        try {
+            privateKey = KeyFactory.getInstance("RSA").generatePrivate(new PKCS8EncodedKeySpec(keyBytes));
+        } catch (NoSuchAlgorithmException ex) {
+            ex.printStackTrace();
+        } catch (InvalidKeySpecException ex) {
+            ex.printStackTrace();
+        }
+
+        try {
+            //Initialize cipher
+            RSAcipher.init(Cipher.DECRYPT_MODE, privateKey);
+        } catch (InvalidKeyException ex) {
+            ex.printStackTrace();
+        }
+
+        try {
+            encryptionPack.keyPack.iv = RSAcipher.doFinal(encryptionPack.keyPack.iv);
+            encryptionPack.keyPack.key = RSAcipher.doFinal(encryptionPack.keyPack.key);
+        } catch (IllegalBlockSizeException ex) {
+            ex.printStackTrace();
+        } catch (BadPaddingException ex) {
+            ex.printStackTrace();
         }
 
         /* Test retrieved package */
